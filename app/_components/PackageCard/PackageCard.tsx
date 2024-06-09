@@ -17,10 +17,10 @@ interface Prop {
   index: number;
 }
 
-function AnimeCard({ anime }: Prop) {
+function PackageCard({ anime }: Prop) {
   return (
-    <div className="max-w-sm rounded relative w-full">
-      <div className="relative w-full h-[37vh]">
+    <div className="max-w-sm relative w-32">
+      <div className="relative w-full h-32">
         <Image
           src={anime.image.original}
           alt={anime.name}
@@ -68,4 +68,4 @@ function AnimeCard({ anime }: Prop) {
   );
 }
 
-export default AnimeCard;
+export default PackageCard;
