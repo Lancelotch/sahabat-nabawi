@@ -42,6 +42,7 @@ const LoginForm: FC<Props> = ({ onSubmit }) => {
         labelPlacement="outside"
         isInvalid={!!errors.email}
         errorMessage={errors?.email?.message}
+        radius="sm"
       />
 
       <Input
@@ -66,8 +67,9 @@ const LoginForm: FC<Props> = ({ onSubmit }) => {
         labelPlacement="outside"
         isInvalid={!!errors.password}
         errorMessage={errors?.password?.message}
+        radius="sm"
       />
-      <Button color="primary" type="submit">
+      <Button color="primary" type="submit" radius="sm">
         Log in
       </Button>
     </form>

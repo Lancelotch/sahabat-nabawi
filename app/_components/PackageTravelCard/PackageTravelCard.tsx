@@ -16,9 +16,10 @@ import { useRouter } from "next/navigation";
 interface Prop {
   product: Product;
   index: number;
+  onClickBuy: (productId: string) => void;
 }
 
-function PackageTravelCard({ product, index }: Prop) {
+function PackageTravelCard({ product, index, onClickBuy }: Prop) {
   const route = useRouter();
   const { base_price, name, departure, hotels, id } = product;
   const { duration, airport, airline } = departure || {};
@@ -60,17 +61,17 @@ function PackageTravelCard({ product, index }: Prop) {
               "https://lp.waroengslide.com/wp-content/uploads/2023/05/Slide2.jpg"
             }
           />
-          <div className="flex flex-col gap-2 p-3">
-            <p className="text-left font-semibold text-sm mb-2 line-clamp-1 mb-2">
+          <div className="flex flex-col gap-2 p-3 overflow-hidden text-ellipsis">
+            <p className="text-left font-semibold text-sm mb-2 line-clamp-1 w-max">
               {name}
             </p>
-            <p className="flex flex-row items-center gap-2 text-sm">
+            <p className="flex flex-row items-center gap-2 text-sm w-max">
               <LuHotel /> {mecca?.name}
             </p>
-            <p className="flex flex-row items-center gap-2 text-sm">
+            <p className="flex flex-row items-center gap-2 text-sm w-max">
               <BiSolidPlaneAlt /> {airline}
             </p>
-            <p className="flex flex-row items-center gap-2 text-sm">
+            <p className="flex flex-row items-center gap-2 text-sm w-max">
               <FaLocationDot /> {airport}
             </p>
             {duration && <Ribbon text={duration} />}
@@ -81,7 +82,11 @@ function PackageTravelCard({ product, index }: Prop) {
             <p className="font-semibold text-[16px] text-green-700">
               {formatCurrencyIDR(base_price)}
             </p>
-            <Button color="primary" size="sm">
+            <Button
+              color="primary"
+              size="sm"
+              onClick={() => onClickBuy(product.id)}
+            >
               Beli Sekarang
             </Button>
           </div>

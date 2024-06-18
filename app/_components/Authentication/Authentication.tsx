@@ -16,12 +16,12 @@ import {
   updateAuthentication,
   updateOpenModal,
 } from "@/app/_redux/auth/auth-slice";
-import { postLogin } from "@/app/_api/server-action/login";
+import { postLogin } from "@/app/_api/server-action/auth/login";
 import { z } from "zod";
 import { loginSchema } from "./LoginForm/schema";
 import { InvalidResponse } from "@/app/_interface/general.interface";
 import { MdErrorOutline } from "react-icons/md";
-import { postRegister } from "@/app/_api/server-action/register";
+import { postRegister } from "@/app/_api/server-action/auth/register";
 import { registerSchema } from "./RegisterForm/schema";
 import { toast } from "react-toastify";
 
@@ -57,6 +57,7 @@ const Authentication: FC = () => {
       setServerError(errorResponse.err_msg);
       return;
     }
+    setIsLogin(true);
     const forceLogin = {
       email: data.email,
       password: data.password,

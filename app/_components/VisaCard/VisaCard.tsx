@@ -14,9 +14,10 @@ import { useRouter } from "next/navigation";
 interface Prop {
   product: Product;
   index: number;
+  onClickBuy: (productId: string) => void;
 }
 
-function VisaCard({ product, index }: Prop) {
+function VisaCard({ product, index, onClickBuy }: Prop) {
   const route = useRouter();
   const {
     base_price,
@@ -71,7 +72,11 @@ function VisaCard({ product, index }: Prop) {
             <p className="font-semibold text-[16px] text-green-700">
               {formatCurrencyIDR(base_price)}
             </p>
-            <Button color="primary" size="sm">
+            <Button
+              color="primary"
+              size="sm"
+              onClick={() => onClickBuy(product.id)}
+            >
               Beli Sekarang
             </Button>
           </div>

@@ -1,9 +1,9 @@
 "use server";
 
 import { z } from "zod";
-import { loginSchema } from "../../_components/Authentication/LoginForm/schema";
-import { axiosInstance } from "@/app/_api";
-import { storeToken } from "./store-token";
+import { loginSchema } from "../../../_components/Authentication/LoginForm/schema";
+import { publicAxios } from "@/app/_api";
+import { storeToken } from "../store-token";
 import {
   ApiResponse,
   InvalidResponse,
@@ -15,7 +15,7 @@ type FormData = z.infer<typeof loginSchema>;
 export const postLogin = async (
   payload: FormData
 ): Promise<ApiResponse<ILoginResponse> | InvalidResponse> => {
-  const response = await axiosInstance({
+  const response = await publicAxios({
     url: "/session",
     method: "POST",
     data: payload,

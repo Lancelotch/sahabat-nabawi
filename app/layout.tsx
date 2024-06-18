@@ -3,6 +3,8 @@ import { DM_Sans } from "next/font/google";
 
 import { NextUIProvider } from "@nextui-org/react";
 
+import "swiper/css";
+import "swiper/css/navigation";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "./_components/Header/Header";

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -14,22 +14,41 @@ import {
   updateOpenModal,
 } from "@/app/_redux/auth/auth-slice";
 import { selectAuth } from "@/app/_redux/auth/selectors";
+import Cookies from "js-cookie";
+import { EAuthentication } from "@/app/_constant/authentication";
+import { FaArrowLeft } from "react-icons/fa6";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 export default function Header() {
   const auth = useSelector(selectAuth);
+  const router = useRouter();
+  const pathName = usePathname();
   const dispatch = useDispatch();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleOpen = () => {
     dispatch(updateOpenModal(true));
   };
 
   const handleLogout = () => {
+    Cookies.remove(EAuthentication.COOKIES_ACCESS_TOKEN);
     dispatch(updateAuthentication(false));
   };
 
   return (
-    <Navbar isBordered>
+    <Navbar isBordered classNames={{ wrapper: "px-3" }}>
       <NavbarBrand>
+        {pathName !== "/" ? (
+          <FaArrowLeft
+            onClick={() => router.back()}
+            className="mr-4 cursor-pointer"
+          />
+        ) : null}
+
         <p className="font-bold text-inherit">Sahabat Nabawi</p>
       </NavbarBrand>
       <NavbarContent justify="end">
@@ -42,7 +61,7 @@ export default function Header() {
             variant="bordered"
             size="sm"
           >
-            {auth.isAuthenticated ? "Logout" : "Login"}
+            {auth.isAuthenticated ? (isClient ? "Logout" : "Login") : "Login"}
           </Button>
         </NavbarItem>
       </NavbarContent>

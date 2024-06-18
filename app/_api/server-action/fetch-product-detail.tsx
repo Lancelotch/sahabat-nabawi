@@ -6,7 +6,7 @@ import {
   IVisaDetail,
   ProductCategoryEnum,
 } from "@/app/_interface/product.interface";
-import { axiosInstance } from "..";
+import { publicAxios } from "..";
 import {
   ApiResponse,
   InvalidResponse,
@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 export const fetchProductDetail = async (payload: IRequestProductDetail) => {
   const { category, id } = payload || {};
   const response: ApiResponse<IVisaDetail> | InvalidResponse =
-    await axiosInstance({
+    await publicAxios({
       url: `/products/${category}/${id}`,
       method: "GET",
     })

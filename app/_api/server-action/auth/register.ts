@@ -1,8 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { axiosInstance } from "@/app/_api";
-import { registerSchema } from "../../_components/Authentication/RegisterForm/schema";
+import { publicAxios } from "@/app/_api";
+import { registerSchema } from "../../../_components/Authentication/RegisterForm/schema";
 import {
   ApiResponse,
   InvalidResponse,
@@ -14,7 +14,7 @@ type FormData = z.infer<typeof registerSchema>;
 export const postRegister = async (
   payload: FormData
 ): Promise<ApiResponse<IRegisterResponse> | InvalidResponse> => {
-  const response = await axiosInstance({
+  const response = await publicAxios({
     url: "/accounts/customer",
     method: "POST",
     data: payload,

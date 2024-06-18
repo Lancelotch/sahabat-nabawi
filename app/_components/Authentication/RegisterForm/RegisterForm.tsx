@@ -5,7 +5,7 @@ import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { registerSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { postRegister } from "../../../_api/server-action/register";
+import { postRegister } from "../../../_api/server-action/auth/register";
 
 interface Props {
   onSubmit: (data: FormData) => void;
@@ -43,6 +43,7 @@ const RegisterForm: FC<Props> = ({ onSubmit }) => {
         isInvalid={!!errors.name}
         errorMessage={errors?.name?.message}
         autoComplete=""
+        radius="sm"
       />
       <Input
         isClearable
@@ -56,6 +57,7 @@ const RegisterForm: FC<Props> = ({ onSubmit }) => {
         isInvalid={!!errors.email}
         errorMessage={errors?.email?.message}
         autoComplete=""
+        radius="sm"
       />
       <Input
         {...register("password", { required: true })}
@@ -80,6 +82,7 @@ const RegisterForm: FC<Props> = ({ onSubmit }) => {
         isInvalid={!!errors.password}
         errorMessage={errors?.password?.message}
         autoComplete=""
+        radius="sm"
       />
       <Input
         isClearable
@@ -92,8 +95,9 @@ const RegisterForm: FC<Props> = ({ onSubmit }) => {
         isInvalid={!!errors.phone_number}
         errorMessage={errors?.phone_number?.message}
         autoComplete=""
+        radius="sm"
       />
-      <Button color="primary" type="submit">
+      <Button color="primary" type="submit" radius="sm">
         Register
       </Button>
     </form>

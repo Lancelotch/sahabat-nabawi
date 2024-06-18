@@ -1,10 +1,10 @@
 "use server";
 
 import { RequestProducts } from "@/app/_interface/product.interface";
-import { axiosInstance } from "..";
+import { publicAxios } from "..";
 
 export const fetchProducts = async (payload: RequestProducts) => {
-  const response = await axiosInstance({
+  const response = await publicAxios({
     url: "/products",
     method: "GET",
     params: payload,
@@ -15,6 +15,6 @@ export const fetchProducts = async (payload: RequestProducts) => {
     .catch((error) => {
       console.error("[Fetch Product]", error);
     });
-
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   return response;
 };

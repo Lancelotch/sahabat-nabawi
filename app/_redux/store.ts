@@ -1,10 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./auth/auth-slice";
+import authReducer, { updateAuthentication } from "./auth/auth-slice";
+import Cookies from "js-cookie";
 
 export const makeStore = () => {
-  return configureStore({
+  const store = configureStore({
     reducer: { authReducer },
   });
+
+  // Hydrate the store from cookies
+  const isAuthenticatedFromCookies = !!Cookies.get("accessToken");
+  store.dispatch(updateAuthentication(isAuthenticatedFromCookies));
+  return store;
 };
 
 // Infer the type of makeStore

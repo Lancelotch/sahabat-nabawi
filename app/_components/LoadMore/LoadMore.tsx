@@ -4,6 +4,8 @@ import { fetchProducts } from "@/app/_api/server-action/fetch-product";
 import {
   Product,
   ProductCategoryEnum,
+  ProductSectionEnum,
+  ProductSubCategoryEnum,
   ResponseProducts,
 } from "@/app/_interface/product.interface";
 import Image from "next/image";
@@ -15,11 +17,13 @@ import { useParams } from "next/navigation";
 
 interface Props {
   category: ProductCategoryEnum;
+  sub_category: ProductSubCategoryEnum;
+  section: ProductSectionEnum;
 }
 
 let page = 2;
 
-const LoadMore: FC<Props> = ({ category }) => {
+const LoadMore: FC<Props> = ({ category, section, sub_category }) => {
   const { ref, inView } = useInView();
   const [products, setProducts] = useState<Product[]>([]);
   const param = useParams();
