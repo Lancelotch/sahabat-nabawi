@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 
 interface Prop {
   product: Product;
-  index: number;
+  index?: number;
   onClickBuy: (productId: string) => void;
 }
 
@@ -41,7 +41,7 @@ function VisaCard({ product, index, onClickBuy }: Prop) {
       initial="hidden"
       animate="visible"
       transition={{
-        delay: index * 0.125,
+        delay: (index || 0) * 0.125,
         ease: "easeInOut",
         duration: 0.5,
       }}

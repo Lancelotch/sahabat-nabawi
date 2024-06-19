@@ -1,7 +1,7 @@
 "use client";
 
 import { IManifestData, OrderResponse } from "@/app/_interface/order.interface";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import TableManifest from "./_components/TableManifest";
 import ManifestModal from "./_components/ManifestForm/ManifestModal";
 import { Button, Input, useDisclosure } from "@nextui-org/react";
@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { useParams } from "next/navigation";
 import { removeManifest } from "@/app/_api/server-action/order/remove-manifest";
 import Confirmation from "@/app/_components/Confirmation/Confirmation";
+import { updateOrder } from "@/app/_api/server-action/order/update-order";
 
 interface Props {
   order: OrderResponse;
@@ -46,6 +47,7 @@ const Order: FC<Props> = ({ order, countries }) => {
     watch,
     formState: { errors },
     setError,
+    getValues,
   } = useForm<OrderSchema>({
     defaultValues: {
       payment_method: 1,
@@ -106,6 +108,24 @@ const Order: FC<Props> = ({ order, countries }) => {
     toast.success(`Hapus manifest data, berhasil!`);
     onClose();
   };
+
+  const handleUpdateOrder = async () => {
+    const response = await updateOrder(
+      { ...getValues(), quantity: parseInt(quantity.toString(), 10) },
+      orderNumber
+    );
+    if (!response.ok) {
+      const errorResponse = response as InvalidResponse;
+      setServerError(errorResponse.err_msg);
+      return;
+    }
+    toast.success(`Update Order, berhasil!`);
+  };
+
+  useEffect(() => {
+    if (!quantity) return;
+    handleUpdateOrder();
+  }, [quantity]);
 
   return (
     <div className="p-3">

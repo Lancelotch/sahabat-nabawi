@@ -4,6 +4,7 @@ import { RequestProducts } from "@/app/_interface/product.interface";
 import { publicAxios } from "..";
 
 export const fetchProducts = async (payload: RequestProducts) => {
+  console.debug({ payload });
   const response = await publicAxios({
     url: "/products",
     method: "GET",

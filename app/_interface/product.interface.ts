@@ -176,8 +176,10 @@ export enum VisaTypeEnum {
 }
 
 export enum ProductSubCategoryEnum {
-  UMRAH = "UMRAH",
-  HAJJ = "HAJJ",
-  ALL_IN = "ALL_IN",
-  CALLING_VISA = "CALLING_VISA",
+  TOURIST_VISA = "TOURIST_VISA",
+  UMRAH_VISA = "UMRAH_VISA",
+  HAJJ_VISA = "HAJJ_VISA",
+  WORK_VISA = "WORK_VISA",
+  BUSINESS_VISA = "BUSINESS_VISA",
+  EDUCATION_VISA = "EDUCATION_VISA",
 }

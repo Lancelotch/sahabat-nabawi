@@ -1,71 +1,39 @@
-import { fetchProducts } from "@/app/_api/server-action/fetch-product";
 import { IPathParam } from "@/app/_interface/general.interface";
 import {
-  Product,
   ProductCategoryEnum,
-  ResponseProducts,
+  ProductSectionEnum,
+  ProductSubCategoryEnum,
 } from "@/app/_interface/product.interface";
+import { Suspense, lazy } from "react";
 import dynamic from "next/dynamic";
-
+const BodySection = lazy(
+  () => import("../_components/BodySection/BodySection")
+);
 const TopSection = dynamic(
-  () => import("../_components/TopSection/TopSection"),
-  {
-    ssr: false,
-  }
+  () => import("../_components/TopSection/TopSection")
 );
-
-const VisaCard = dynamic(() => import("@/app/_components/VisaCard/VisaCard"), {
-  ssr: false,
-});
-
-const PackageTravelCard = dynamic(
-  () => import("@/app/_components/PackageTravelCard/PackageTravelCard"),
-  { ssr: false }
-);
-
-const LoadMore = dynamic(() => import("@/app/_components/LoadMore/LoadMore"), {
-  ssr: false,
-});
 
 async function SearchCategory({ params, searchParams }: IPathParam) {
-  const { category } = params;
-  const { section, sub_category } = searchParams;
-  const categoryProduct =
-    category === ProductCategoryEnum.VISA
-      ? ProductCategoryEnum.VISA_SERVICE
-      : ProductCategoryEnum.TRAVEL_PACKAGE;
-
-  const response: ResponseProducts = await fetchProducts({
-    page: 1,
-    limit: 10,
-    category: categoryProduct,
-    section,
-    sub_category,
-  });
+  const { category = ProductCategoryEnum.VISA_SERVICE } = params || {};
+  const { section, sub_category } = searchParams || {};
 
   return (
     <div>
-      <TopSection />
-      <section className="p-6 flex flex-col gap-8">
-        {response.data.products.map((product: Product, index: number) =>
-          category === ProductCategoryEnum.VISA ? (
-            <VisaCard key={product.id} product={product} index={index} />
-          ) : (
-            <PackageTravelCard
-              key={product.id}
-              product={product}
-              index={index}
-            />
-          )
-        )}
-      </section>
-      {response.ok && (
-        <LoadMore
-          category={categoryProduct}
+      <TopSection
+        category={category}
+        section={section as unknown as ProductSectionEnum}
+        subCategory={sub_category as unknown as ProductSubCategoryEnum}
+      />
+      <Suspense
+        key={`${searchParams?.sub_category}-${section}`}
+        fallback={<div>Loading...</div>}
+      >
+        <BodySection
+          category={category}
           section={section}
           sub_category={sub_category}
         />
-      )}
+      </Suspense>
     </div>
   );
 }

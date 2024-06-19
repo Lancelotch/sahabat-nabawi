@@ -1,19 +1,65 @@
 "use client";
 
-import React, { ChangeEvent, FC, useState } from "react";
-import { ProductCategoryEnum } from "@/app/_interface/product.interface";
-import { useRouter } from "next/navigation";
-import { categoryServices } from "@/app/_constant/target-visa.constant";
+import React, { FC } from "react";
+import {
+  ProductCategoryEnum,
+  ProductSectionEnum,
+  ProductSubCategoryEnum,
+} from "@/app/_interface/product.interface";
+import {
+  categoryServices,
+  sectionServices,
+  subCategoryServices,
+} from "@/app/_constant/target-visa.constant";
 import { Select, SelectItem } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
-const TopSection = () => {
-  const [serviceSelected, setServiceSelected] = useState<ProductCategoryEnum>(
-    ProductCategoryEnum.VISA
-  );
+interface Props {
+  category: ProductCategoryEnum;
+  subCategory: ProductSubCategoryEnum;
+  section: ProductSectionEnum;
+}
 
-  const handleOnChangeService = (e: ChangeEvent<HTMLSelectElement>) => {
-    const service = e.target.value as ProductCategoryEnum;
-    setServiceSelected(service);
+const TopSection: FC<Props> = ({ category, subCategory, section }) => {
+  const router = useRouter();
+
+  const handleOnChangeCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value as ProductCategoryEnum;
+    router.push(`/search/${value}${getQueryString({ subCategory, section })}`);
+  };
+
+  const handleOnChangeSubCategory = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = e.target.value as ProductSubCategoryEnum;
+    router.push(
+      `/search/${category}${getQueryString({ subCategory: value, section })}`
+    );
+  };
+
+  const handleOnChangeSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value as ProductSectionEnum;
+    router.push(
+      `/search/${category}${getQueryString({ subCategory, section: value })}`
+    );
+  };
+
+  // Function to build query string based on defined values
+  const getQueryString = ({
+    subCategory,
+    section,
+  }: {
+    subCategory?: string;
+    section?: string;
+  }) => {
+    const params = [];
+    if (subCategory !== undefined) {
+      params.push(`sub_category=${encodeURIComponent(subCategory)}`);
+    }
+    if (section !== undefined) {
+      params.push(`section=${encodeURIComponent(section)}`);
+    }
+    return params.length > 0 ? `?${params.join("&")}` : "";
   };
 
   return (
@@ -27,8 +73,8 @@ const TopSection = () => {
           radius="sm"
           labelPlacement="outside"
           name="category-service"
-          defaultSelectedKeys={[serviceSelected]}
-          onChange={handleOnChangeService}
+          defaultSelectedKeys={[category]}
+          onChange={handleOnChangeCategory}
         >
           {categoryServices.map((category) => (
             <SelectItem key={category.value} value={category.value}>
@@ -40,17 +86,17 @@ const TopSection = () => {
       <div className="w-full flex flex-row gap-4">
         <div className="w-full">
           <label htmlFor="category-service" className="text-xs">
-            Service
+            Sub Kategori
           </label>
           <Select
             size="sm"
             radius="sm"
             labelPlacement="outside"
             name="category-service"
-            defaultSelectedKeys={[serviceSelected]}
-            onChange={handleOnChangeService}
+            defaultSelectedKeys={[subCategory]}
+            onChange={handleOnChangeSubCategory}
           >
-            {categoryServices.map((category) => (
+            {subCategoryServices.map((category) => (
               <SelectItem key={category.value} value={category.value}>
                 {category.label}
               </SelectItem>
@@ -59,19 +105,19 @@ const TopSection = () => {
         </div>
         <div className="w-full">
           <label htmlFor="category-service" className="text-xs">
-            Section
+            Promo
           </label>
           <Select
             size="sm"
             radius="sm"
             labelPlacement="outside"
             name="category-service"
-            defaultSelectedKeys={[serviceSelected]}
-            onChange={handleOnChangeService}
+            defaultSelectedKeys={[section]}
+            onChange={handleOnChangeSection}
           >
-            {categoryServices.map((category) => (
-              <SelectItem key={category.value} value={category.value}>
-                {category.label}
+            {sectionServices.map((section) => (
+              <SelectItem key={section.value} value={section.value}>
+                {section.label}
               </SelectItem>
             ))}
           </Select>
