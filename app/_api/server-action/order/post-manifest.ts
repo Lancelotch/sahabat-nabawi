@@ -7,7 +7,7 @@ import {
   InvalidResponse,
 } from "@/app/_interface/general.interface";
 import { manifestSchema } from "@/app/order/[orderNumber]/_components/ManifestForm/schema";
-import { OrderResponse } from "@/app/_interface/order.interface";
+import { IOrder } from "@/app/_interface/order.interface";
 
 type FormData = z.infer<typeof manifestSchema>;
 
@@ -16,7 +16,7 @@ export const postManifest = async (
   order_number: string,
   order_item_id: number,
   id?: string
-): Promise<ApiResponse<OrderResponse> | InvalidResponse> => {
+): Promise<ApiResponse<IOrder> | InvalidResponse> => {
   const response = await privateAxios({
     url: `/orders/${order_number}/${order_item_id}/manifests${
       id ? `/${id}` : ""
@@ -24,7 +24,7 @@ export const postManifest = async (
     method: id ? "PUT" : "POST",
     data: payload,
   })
-    .then((res): ApiResponse<OrderResponse> => {
+    .then((res): ApiResponse<IOrder> => {
       return res.data;
     })
     .catch((e): InvalidResponse => {
