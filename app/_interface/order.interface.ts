@@ -1,3 +1,5 @@
+import Order from "../order/[orderNumber]/Order";
+import { IPagination } from "./general.interface";
 import { ProductCategoryEnum } from "./product.interface";
 
 export interface InitiateOrderRequest {
@@ -8,6 +10,12 @@ export interface InitiateOrderRequest {
 
 export interface IGetOrderRequest {
   order_number: string;
+}
+
+export enum EOrderStatus {
+  INITIATED = "INITIATED",
+  WAIT_FOR_PAYMENT = "WAIT_FOR_PAYMENT",
+  PAID = "PAID",
 }
 
 export interface IManifestData {
@@ -21,11 +29,19 @@ export interface IManifestData {
   personal_photo_url: string;
 }
 
-export interface OrderResponse {
+export interface OrdersRequest {
+  status?: EOrderStatus;
+  start_time?: number;
+  end_time?: number;
+  limit?: number;
+  page?: number;
+}
+
+export interface IOrder {
   order_number: string;
   total_quantity: number;
   total_price: number;
-  status: "INITIATED";
+  status: EOrderStatus;
   order_items: (TravelPackageProduct | VisaServiceProduct)[];
 
   title?: string;
@@ -37,6 +53,11 @@ export interface OrderResponse {
   paid_at?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface OrderResponse {
+  orders: IOrder[];
+  pagination: IPagination;
 }
 
 export interface TravelPackageProduct {

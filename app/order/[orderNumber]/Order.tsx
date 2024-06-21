@@ -1,7 +1,7 @@
 "use client";
 
-import { IManifestData, OrderResponse } from "@/app/_interface/order.interface";
-import { FC, useState } from "react";
+import { IManifestData, IOrder } from "@/app/_interface/order.interface";
+import { FC, useEffect, useState } from "react";
 import TableManifest from "./_components/TableManifest";
 import ManifestModal from "./_components/ManifestForm/ManifestModal";
 import { Button, Input, useDisclosure } from "@nextui-org/react";
@@ -16,16 +16,21 @@ import {
   InvalidResponse,
 } from "@/app/_interface/general.interface";
 import { toast } from "react-toastify";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { removeManifest } from "@/app/_api/server-action/order/remove-manifest";
 import Confirmation from "@/app/_components/Confirmation/Confirmation";
+import { updateOrder } from "@/app/_api/server-action/order/update-order";
+import { createOrder } from "@/app/_api/server-action/order/create-order";
 
 interface Props {
-  order: OrderResponse;
+  order: IOrder;
   countries: ICountriesResponse;
 }
 
+type ApiCall = () => Promise<InvalidResponse | ApiResponse<IOrder>>;
+
 const Order: FC<Props> = ({ order, countries }) => {
+  const { push } = useRouter();
   const { orderNumber } = useParams<{
     orderNumber: string;
   }>();
@@ -46,66 +51,126 @@ const Order: FC<Props> = ({ order, countries }) => {
     watch,
     formState: { errors },
     setError,
+    getValues,
   } = useForm<OrderSchema>({
     defaultValues: {
+      quantity: parseInt(min_quantity, 10),
+      title: name,
       payment_method: 1,
     },
     resolver: zodResolver(validationSchema),
   });
 
-  const handleCheckout = (payload: OrderSchema) => {
+  const title = watch("title");
+  const quantity = watch("quantity");
+
+  const [serverError, setServerError] = useState<string>();
+
+  const handleApiResponse = async (
+    apiCall: ApiCall,
+    successCallback: (data: any) => void,
+    successToastMessage: string,
+    errorCallback?: (errorResponse: InvalidResponse) => void
+  ) => {
+    try {
+      const response = await apiCall();
+
+      if ("ok" in response && !response.ok) {
+        if (errorCallback) {
+          errorCallback(response as InvalidResponse);
+        }
+        return;
+      }
+
+      const successResponse = response as ApiResponse<IOrder>;
+      const orderItems = successResponse.data.order_items;
+
+      if (orderItems && orderItems.length > 0) {
+        const manifestData = orderItems[0].manifests_data;
+        successCallback(manifestData);
+      }
+
+      toast.success(successToastMessage);
+    } catch (error) {
+      console.error("API call failed:", error);
+    }
+  };
+
+  const handleManifest = async (data: ManifestSchema) => {
+    await handleApiResponse(
+      () =>
+        postManifest(
+          data,
+          orderNumber,
+          orderItem?.order_item_id || 1,
+          selectManifestData?.id
+        ),
+      (manifestData) => {
+        setSelectManifestData(undefined);
+        setManifestData(manifestData);
+      },
+      `${selectManifestData?.id ? "Rubah" : "Tambah"} manifest data, berhasil!`,
+      (errorResponse) => setServerError(errorResponse.err_msg)
+    );
+    setOpenManifest(false);
+  };
+
+  const handleRemoveManifest = async () => {
+    await handleApiResponse(
+      () =>
+        removeManifest(
+          orderNumber,
+          orderItem?.order_item_id || 1,
+          selectManifestData?.id
+        ),
+      (manifestData) => {
+        setSelectManifestData(undefined);
+        setManifestData(manifestData);
+      },
+      `Hapus manifest data, berhasil!`,
+      (errorResponse) => setServerError(errorResponse.err_msg)
+    );
+    onClose();
+  };
+
+  const handleUpdateOrder = async () => {
+    await handleApiResponse(
+      () =>
+        updateOrder(
+          {
+            ...getValues(),
+            title,
+            quantity: parseInt(quantity.toString(), 10),
+          },
+          orderNumber
+        ),
+      () => {},
+      `Update Order, berhasil!`,
+      (errorResponse) => setServerError(errorResponse.err_msg)
+    );
+  };
+
+  const handleCheckout = async (payload: OrderSchema) => {
     if (manifestData.length < parseInt(min_quantity, 10)) {
       setError("manifestData", {
         message: "Jumlah Data belum memenuhi syarat minimal kuantitas",
       });
       return;
     }
+    await handleApiResponse(
+      () => createOrder(payload, orderNumber),
+      () => {
+        push("/profile/purchase_history");
+      },
+      `Create Order, berhasil!`,
+      (errorResponse) => setServerError(errorResponse.err_msg)
+    );
   };
 
-  const quantity = watch("quantity");
-
-  const [serverError, setServerError] = useState<string>();
-
-  const handleManifest = async (data: ManifestSchema) => {
-    const response = await postManifest(
-      data,
-      orderNumber,
-      orderItem?.order_item_id || 1,
-      selectManifestData?.id
-    );
-    if (!response.ok) {
-      const errorResponse = response as InvalidResponse;
-      setServerError(errorResponse.err_msg);
-      return;
-    }
-    const successResponse = response as ApiResponse<OrderResponse>;
-    const manifestData = successResponse.data.order_items[0].manifests_data;
-    setSelectManifestData(undefined);
-    setManifestData(manifestData);
-    toast.success(
-      `${selectManifestData?.id ? "Rubah" : "Tambah"} manifest data, berhasil!`
-    );
-    setOpenManifest(false);
-  };
-
-  const handleRemoveManifest = async () => {
-    const response = await removeManifest(
-      orderNumber,
-      orderItem?.order_item_id || 1,
-      selectManifestData?.id
-    );
-    if (!response.ok) {
-      const errorResponse = response as InvalidResponse;
-      setServerError(errorResponse.err_msg);
-      return;
-    }
-    const successResponse = response as ApiResponse<OrderResponse>;
-    const manifestData = successResponse.data.order_items[0].manifests_data;
-    setSelectManifestData(undefined);
-    setManifestData(manifestData);
-    toast.success(`Hapus manifest data, berhasil!`);
-    onClose();
-  };
+  useEffect(() => {
+    if (!quantity) return;
+    handleUpdateOrder();
+  }, [quantity]);
 
   return (
     <div className="p-3">

@@ -1,11 +1,12 @@
 import {
+  ProductCategoryEnum,
   ProductSectionEnum,
   ProductSubCategoryEnum,
 } from "./product.interface";
 
-export interface GeneralOption {
+export interface GeneralOption<T> {
   label: string;
-  value: string;
+  value: T;
 }
 
 export interface ApiResponse<T> {
@@ -28,7 +29,7 @@ export interface IPagination {
 
 export interface IPathParam {
   params?: {
-    category?: string;
+    category?: ProductCategoryEnum;
     id?: string;
     orderItemId?: string;
     orderNumber?: string;
@@ -46,7 +47,7 @@ export interface ITableColumn {
 
 export interface ICountriesResponse {
   userCountryCode: string;
-  countries: GeneralOption[];
+  countries: GeneralOption<string>[];
 }
 
 export type ImageUploaderProps = {

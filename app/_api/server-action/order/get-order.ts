@@ -5,19 +5,16 @@ import {
   ApiResponse,
   InvalidResponse,
 } from "@/app/_interface/general.interface";
-import {
-  IGetOrderRequest,
-  OrderResponse,
-} from "@/app/_interface/order.interface";
+import { IGetOrderRequest, IOrder } from "@/app/_interface/order.interface";
 
 export const getOrder = async (
   payload: IGetOrderRequest
-): Promise<ApiResponse<OrderResponse> | InvalidResponse> => {
+): Promise<ApiResponse<IOrder> | InvalidResponse> => {
   const response = await privateAxios({
     url: `/orders/${payload.order_number}`,
     method: "GET",
   })
-    .then((res): ApiResponse<OrderResponse> => {
+    .then((res): ApiResponse<IOrder> => {
       return res.data;
     })
     .catch((e): InvalidResponse => {
